@@ -1,4 +1,3 @@
-
 import java.io.*;
 import java.security.*;
 import java.util.*;
@@ -6,6 +5,9 @@ import java.util.*;
 
 public class BinarySearch {
 	
+
+	
+
 	public static void main(String[] args) {
 		
 		try
@@ -50,7 +52,16 @@ public class BinarySearch {
 			//显示要查询的数
 			System.out.println("您要查找的数是"+number_search);
 			//二分查找
-			int index = BSearch(array_x, 0, array_x.size()-1, number_search);
+			
+			
+			WrapDistance wrapDis = new WrapDistance(Integer.MAX_VALUE, Integer.MAX_VALUE);
+			wrapDis.distance = Integer.MAX_VALUE;
+			wrapDis.closest = Integer.MAX_VALUE;
+			
+			int index = BSearch(array_x, 0, array_x.size()-1, number_search,wrapDis);
+			
+			
+			
 			
 			int temp_min = Integer.MAX_VALUE;
 			
@@ -58,15 +69,15 @@ public class BinarySearch {
 				
 				System.out.println("数组中没有要查询的数");
 				
-				for(int k =0; k<array_x.size(); k++){
-					if(Math.abs(array_x.get(k)-number_search) <  temp_min){
-						index= k;
-						temp_min =Math.abs(array_x.get(k)-number_search);
-					}
-				}
-				
-				System.out.println("距离您要查找的数最近的是" + array_x.get(index));
-		
+//				for(int k =0; k<array_x.size(); k++){
+//					if(Math.abs(array_x.get(k)-number_search) <  temp_min){
+//						index= k;
+//						temp_min =Math.abs(array_x.get(k)-number_search);
+//					}
+//				}
+//				
+//				System.out.println("距离您要查找的数最近的是" + array_x.get(index));
+				System.out.println("the closest number is: " + wrapDis.closest);
 				
 			}else{
 				
@@ -85,6 +96,9 @@ public class BinarySearch {
 	
 	public static void BubbleSort(ArrayList<Integer> array_list){
 		int temp =0;
+		
+
+		
 		for(int i=array_list.size() -1; i>0; i--){
 			for(int j =0; j<i; j++){
 				if(array_list.get(j)>array_list.get(j+1)){
@@ -96,8 +110,8 @@ public class BinarySearch {
 			}
 		}
 	}
-	
-	public static int BSearch(ArrayList<Integer> array_list, int left, int right, int the_number){
+	// changed "the_number" to "key" 
+	public static int BSearch(ArrayList<Integer> array_list, int left, int right, int key, WrapDistance wrapDis){
 	
 		
 		if(right<left){
@@ -105,13 +119,24 @@ public class BinarySearch {
 		}
 		
 		int middle = (int)(left+right)/2;
-		
-		if(array_list.get(middle)==the_number){
+		int midValue = array_list.get(middle);// define a local variable here so that we won't call array_list.get() so many times
+		                                      // and it is readable
+		if(midValue==key){
 			return middle;
-		}else if(array_list.get(middle)>the_number){
-			return BSearch(array_list, left,middle-1,the_number);
+		}else if(midValue>key){
+			if((midValue-key) < wrapDis.distance)
+			{
+				wrapDis.distance = midValue-key;
+				wrapDis.closest = midValue;
+			}
+			return BSearch(array_list, left,middle-1,key, wrapDis);
 		}else{
-			return BSearch(array_list, middle+1,right,the_number);
+			if((key - midValue) < wrapDis.distance)
+			{
+				wrapDis.distance = key - midValue;
+				wrapDis.closest =  midValue;
+			}
+			return BSearch(array_list, middle+1,right,key,wrapDis);
 		}
 			
 		
